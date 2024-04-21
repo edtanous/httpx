@@ -104,6 +104,7 @@ def test_raise_for_status():
         "Informational response '101 Switching Protocols' for url 'https://example.org'\n"
         "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/101"
     )
+    assert not response.ok
 
     # 3xx status codes are redirections.
     headers = {"location": "https://other.org"}
@@ -116,6 +117,7 @@ def test_raise_for_status():
         "Redirect location: 'https://other.org'\n"
         "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/303"
     )
+    assert not response.ok
 
     # 4xx status codes are a client error.
     response = httpx.Response(403, request=request)
@@ -127,6 +129,7 @@ def test_raise_for_status():
         "Client error '403 Forbidden' for url 'https://example.org'\n"
         "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403"
     )
+    assert not response.ok
 
     # 5xx status codes are a server error.
     response = httpx.Response(500, request=request)
@@ -138,12 +141,15 @@ def test_raise_for_status():
         "Server error '500 Internal Server Error' for url 'https://example.org'\n"
         "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
     )
+    assert not response.ok
 
     # Calling .raise_for_status without setting a request instance is
     # not valid. Should raise a runtime error.
     response = httpx.Response(200)
     with pytest.raises(RuntimeError):
         response.raise_for_status()
+    with pytest.raises(RuntimeError):
+        assert not response.ok
 
 
 def test_response_repr():

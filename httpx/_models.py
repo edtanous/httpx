@@ -670,6 +670,22 @@ class Response:
         return codes.is_success(self.status_code)
 
     @property
+    def ok(self) -> bool:
+        """
+        A property which is 'True' if a status code is less than 400.
+
+        This attribute checks if the status code of the response is between
+        400 and 600 to see if there was a client error or a server error. If
+        the status code is between 200 and 400, this will return True. This
+        is **not** a check to see if the response code is ``200 OK``.
+        """
+        try:
+            self.raise_for_status()
+        except HTTPStatusError:
+            return False
+        return True
+
+    @property
     def is_redirect(self) -> bool:
         """
         A property which is `True` for 3xx status codes, `False` otherwise.
